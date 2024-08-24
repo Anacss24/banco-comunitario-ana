@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { Gerente } from './gerente.model';
-import { Cliente } from 'src/clientes/cliente.model';
+import { Injectable } from '@nestjs/common';;
+import { Cliente } from 'src/clientes/models/cliente.model';
+import { Gerente } from '../models/gerente.model';
 
 @Injectable()
 export class GerentesService {
@@ -22,6 +22,8 @@ export class GerentesService {
             gerente.clientes.some(cliente => cliente.id === id)
         );
     }
+
+    
 
     
 }

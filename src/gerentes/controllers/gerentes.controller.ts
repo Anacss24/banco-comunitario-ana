@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
-import { GerentesService } from './gerentes.service';
-import { Cliente } from 'src/clientes/cliente.model';
+import { Cliente } from 'src/clientes/models/cliente.model';
+import { GerentesService } from '../services/gerentes.service';
 
 @Controller('gerentes')
 export class GerentesController {

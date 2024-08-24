@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
-import { ContasService } from './contas.service';
-import { Cliente } from 'src/clientes/cliente.model';
+import { Cliente } from 'src/clientes/models/cliente.model';
+import { ContasService } from '../services/contas.service';
 
 @Controller('contas')
 export class ContasController {

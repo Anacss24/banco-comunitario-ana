@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ClientesService } from './clientes/clientes.service';
-import { ClientesController } from './clientes/clientes.controller';
-import { ContasService } from './contas/contas.service';
-import { ContasController } from './contas/contas.controller';
-import { GerentesService } from './gerentes/gerentes.service';
-import { GerentesController } from './gerentes/gerentes.controller';
+import { ClientesController } from './clientes/controllers/clientes.controller';
+import { ContasController } from './contas/controllers/contas.controller';
+import { GerentesService } from './gerentes/services/gerentes.service';
+import { GerentesController } from './gerentes/controllers/gerentes.controller';
+import { ContasService } from './contas/services/contas.service';
+import { ClientesService } from './clientes/services/clientes.service';
 
 @Module({
   imports: [],
