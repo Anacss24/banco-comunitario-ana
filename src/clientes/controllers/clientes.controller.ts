@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
+import { UpdateClienteDto } from './../dto/cliente.dto';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, Post } from '@nestjs/common';
 import { ClientesService } from '../services/clientes.service';
+import { Cliente } from '../entity/cliente.entity';
 
 
 @Controller('clientes')
@@ -7,45 +9,37 @@ export class ClientesController {
     constructor(private readonly clienteService: ClientesService) {}
 
     @Post("criarCliente")
-    createCliente(@Body() body: { nome: string, endereco: string, telefone: string }) {
-        const cliente = this.clienteService.createCliente(body.nome, body.endereco, body.telefone)
-        return {
-            statusCode: HttpStatus.CREATED,
-            message: 'Cliente criado com sucesso',
-            data: cliente
-        }
+    createCliente(@Body() cliente: Cliente ): Promise<Cliente> {
+        return this.clienteService.createCliente(cliente)
     }
 
     @Get()
-    getAll() {
-        const clientes = this.clienteService.gelAllClientes();
-        return {
-            statusCode: HttpStatus.OK,
-            message: 'Todos os clientes retornados com sucesso',
-            data: clientes
-        }
+    getClienteAll() {
+       return this.clienteService.getClienteAll()
     }
+    
 
     @Get(':id')
     getById(@Param('id') id: string) {
-        const cliente = this.clienteService.getClienteById(id);
-        if (!cliente) {
-            throw new HttpException('Cliente não encontrado', HttpStatus.NOT_FOUND)
-        }
+        try {
 
-        return {
-            statusCode: HttpStatus.OK,
-            message: 'Todos os clientes retornados com sucesso',
-            data: cliente
+            return this.clienteService.getClienteById(id)
+
+        } catch(error) {
+            throw new NotFoundException({error: error.message})
+
         }
     }
+
+    @Post()
+    updateCliente(@Body() cliente: Cliente): Promise<Cliente> {
+        return this.clienteService.updateCliente(cliente)
+    }
+
+
     @Delete(':id')
     deleteClienteById(@Param('id') id: string){
-        this.clienteService.deleteClienteById(id);
-        return{
-            statusCode: HttpStatus.NO_CONTENT,
-            message: 'Cliente deletado com sucesso'
-        }
+        return this.clienteService.deleteClienteById(id)
     }
 
 }

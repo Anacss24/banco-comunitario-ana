@@ -1,28 +1,48 @@
-import { Injectable } from '@nestjs/common';
-import { Cliente } from 'src/clientes/models/cliente.model';
-import { ContaBancaria } from '../models/contaBancaria.model';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Cliente } from '../../clientes/entity/cliente.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ContaBancaria} from '../entity/contaBancaria.entity';
+import { DeleteResult, Repository } from 'typeorm';
+
 
 @Injectable()
-export class ContasService {
-    contas: ContaBancaria [] = [];
+export class ContaBancariaService {
+
+   constructor(@InjectRepository(ContaBancaria)
+   private contasRepository: Repository<ContaBancaria>
+
+    ){}
    
 
-    createConta(saldo: number, tipo: string, cliente: Cliente): ContaBancaria {
-        const newConta = new ContaBancaria(saldo, tipo, cliente);
-        this.contas.push(newConta);
-        return newConta;
+     async createConta(contas: ContaBancaria): Promise<ContaBancaria> {
+        return await this.contasRepository.save(contas)
     }
 
-    getAllContas(): ContaBancaria [] {
-        return this.contas;
+     async getAllContas(): Promise<ContaBancaria[]> {
+        return await this.contasRepository.find({
+            relations:{
+                cliente: true
+            }
+        })
     }
 
-    getContaById(id: string): ContaBancaria | undefined {
-        return this.contas.find(conta => conta.cliente.id === id);
+     async getContaById(id: string): Promise<ContaBancaria> {
+        return await this.contasRepository.findOne({
+            where:{id},
+            relations:{
+                cliente: true
+            }
+        })
     }
 
-    deleteContaById(id: string): void {
-        this.contas = this.contas.filter(conta => conta.cliente.id !== id)
+     async deleteContaById(id: string): Promise<DeleteResult> {
+       let buscarConta = await this.getContaById(id)
+
+       if(!buscarConta){
+            throw new HttpException('Conta não encontrada', HttpStatus.NOT_FOUND)
+       }
+
+       return this.contasRepository.delete(id)
     }
 
 }

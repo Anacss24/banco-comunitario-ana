@@ -1,7 +1,7 @@
 import { Body, Controller, HttpStatus, Post } from "@nestjs/common";
 import { PagamentoService } from "../services/pagamento.service";
-import { ContaBancaria } from "../../contas/models/contaBancaria.model";
-import { Pagamento } from "../models/pagamento.model";
+import { ContaBancaria } from "../../contas/entity/contaBancaria.entity";
+import { Pagamento } from "../entity/pagamento.entity";
 
 @Controller('pagamento')
 export class PagamentoController{

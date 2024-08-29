@@ -1,6 +1,6 @@
-import { ContaBancaria } from './../../contas/models/contaBancaria.model';
+import { ContaBancaria } from '../../contas/entity/contaBancaria.entity';
 import { Injectable } from "@nestjs/common";
-import { Pagamento, ProcessoDePagamento } from "../models/pagamento.model";
+import { Pagamento, ProcessoDePagamento } from "../entity/pagamento.entity";
 
 @Injectable()
 export class PagamentoService {

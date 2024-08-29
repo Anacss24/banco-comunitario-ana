@@ -1,52 +1,34 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post } from '@nestjs/common';
-import { Cliente } from 'src/clientes/models/cliente.model';
-import { ContasService } from '../services/contas.service';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, NotFoundException, Param, Post } from '@nestjs/common';
+import { ContaBancaria } from '../entity/contaBancaria.entity';
+import { ContaBancariaService } from '../services/contas.service';
 
 @Controller('contas')
-export class ContasController {
-    constructor(private readonly contaService: ContasService ){}
+export class ContaBancariaController {
+    constructor(private readonly contaService: ContaBancariaService) { }
 
     @Post("criarConta")
-    createConta(@Body() body: {saldo: number, tipo: string, cliente: Cliente}){
-        const conta = this.contaService.createConta(body.saldo, body.tipo, body.cliente)
-        return{
-            statusCode: HttpStatus.CREATED,
-            message: 'Conta criada com sucesso',
-            data: conta     
-        }
+    createConta(@Body() contaBancaria: ContaBancaria): Promise<ContaBancaria> {
+        return this.contaService.createConta(contaBancaria)
+
     }
 
     @Get()
-    getAll(){
-        const contas = this.contaService.getAllContas();
-        return{
-            statusCode: HttpStatus.CREATED,
-            message: 'Todas as contas retornadas com sucesso',
-            data: contas     
-        }
+    getAll() {
+        return this.contaService.getAllContas()
     }
 
     @Get(":id")
-    getById(@Param('id') id: string){
-        const conta = this.contaService.getContaById(id);
-        if(!conta){
-            throw new HttpException('Conta não encontrada',
-                HttpStatus.NOT_FOUND)
+    getById(@Param('id') id: string) {
+        try {
+            return this.contaService.getContaById(id)
+        } catch (error) {
+            throw new NotFoundException({ error: error.message })
         }
+    }
 
-        return{
-            statusCode: HttpStatus.OK,
-            message: 'Conta retornada com sucesso',
-             data: conta
-        }
-        }
 
-        @Delete(':id')
-        deleteContaById(@Param('id')id: string){
-            this.contaService.deleteContaById(id);
-            return{
-                statusCode: HttpStatus.NO_CONTENT,
-                message: 'Conta deletada com sucesso'
-            }
+    @Delete(':id')
+    deleteContaById(@Param('id') id: string) {
+        return this.contaService.deleteContaById(id)
     }
 }

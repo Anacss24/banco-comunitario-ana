@@ -1,26 +1,64 @@
-import { Injectable } from '@nestjs/common';
-import { Cliente } from '../models/cliente.model';
+
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, Repository } from 'typeorm';
+import { Cliente } from '../entity/cliente.entity';
+
 
 
 @Injectable()
 export class ClientesService {
-    private _clientes: Cliente[] = [];
 
-    createCliente(nome: string, endereco: string, telefone: string): Cliente {
-        const newCliente = new Cliente(nome, endereco, telefone)
-        this._clientes.push(newCliente)
-        return newCliente;
+    constructor(@InjectRepository(Cliente)
+    private clienteRepository: Repository<Cliente>
+
+    ) { }
+
+    async createCliente(cliente: Cliente): Promise<Cliente> {
+        return await this.clienteRepository.save(cliente)
     }
 
-    gelAllClientes(): Cliente[] {
-        return this._clientes;
+    async getClienteAll(): Promise<Cliente[]> {
+        return await this.clienteRepository.find({
+            relations:{
+                contaBancaria: true,
+                gerente: true
+            }
+        })
     }
 
-    getClienteById(id: string): Cliente {
-        return this._clientes.find(cliente => cliente.id === id);    
+    async getClienteById(id: string): Promise<Cliente> {
+        return await this.clienteRepository.findOne({
+            where: { id },
+            relations:{
+                contaBancaria: true,
+                gerente: true
+            }
+        })
     }
 
-    deleteClienteById(id: string): void {
-        this._clientes = this._clientes.filter((cliente) => cliente.id !== id);
+    async updateCliente(cliente: Cliente): Promise<Cliente> {
+        let procurarCliente = await this.getClienteById(cliente.id)
+
+        if(!procurarCliente || !cliente.id) {
+
+            throw new HttpException('Cliente não encontrado', HttpStatus.NOT_FOUND)
+
+        }
+
+        return this.clienteRepository.save(cliente)
+    }
+
+
+
+    async deleteClienteById(id: string): Promise<DeleteResult> {
+        let procurarCliente = await this.getClienteById(id)
+
+        if (!procurarCliente) {
+            throw new HttpException('Cliente não encontrado', HttpStatus.NOT_FOUND)
+
+        }
+
+        return this.clienteRepository.delete(id)
     }
 }
